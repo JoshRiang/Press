@@ -97,5 +97,5 @@ Press is an open-source project. We welcome contributions of all kinds! Please c
 
 This project is licensed under the [ISC License](LICENSE).
 
-### Made By Love
+### Made With Love By
 Joshua Richardo Riangkamang
