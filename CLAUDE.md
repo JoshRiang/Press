@@ -1,0 +1,3 @@
+# We are making an app called Press, a Gym Tracker with 3D Visualization. 
+
+This document serves as the master reference for all code generation, file creation, and refactoring code. It contains detailed guidelines on data schemas, project architecture, environment variable management, and UI/UX design principles. You can access all of the documents in the `docs/` directory, which are organized by topic. When generating code, you must adhere to the specifications outlined in these documents to ensure consistency, maintainability, and alignment with the project goals.

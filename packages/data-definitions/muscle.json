@@ -1,0 +1,92 @@
+[
+  {
+    "id": "base_mannequin",
+    "mesh_name": "Main Body",
+    "muscle_group": "Base Manekin / Tubuh Utama (Non-Otot)"
+  },
+  {
+    "id": "back",
+    "mesh_name": "Mesh_Back",
+    "muscle_group": "Punggung (Umum)"
+  },
+  {
+    "id": "biceps",
+    "mesh_name": "Mesh_Bicep",
+    "muscle_group": "Bicep"
+  },
+  {
+    "id": "chest_bot",
+    "mesh_name": "Mesh_Bottom_Chest",
+    "muscle_group": "Dada Bawah"
+  },
+  {
+    "id": "calves",
+    "mesh_name": "Mesh_Calf",
+    "muscle_group": "Betis"
+  },
+  {
+    "id": "core",
+    "mesh_name": "Mesh_Core",
+    "muscle_group": "Inti / Perut"
+  },
+  {
+    "id": "forearm",
+    "mesh_name": "Mesh_Forearm",
+    "muscle_group": "Lengan Bawah"
+  },
+  {
+    "id": "glutes",
+    "mesh_name": "Mesh_Glutes",
+    "muscle_group": "Bongkong"
+  },
+  {
+    "id": "hamstring",
+    "mesh_name": "Mesh_Hamstring",
+    "muscle_group": "Paha Belakang"
+  },
+  {
+    "id": "head_neck",
+    "mesh_name": "Mesh_Head",
+    "muscle_group": "Kepala / Leher"
+  },
+  {
+    "id": "lats",
+    "mesh_name": "Mesh_Lats",
+    "muscle_group": "Lats / Sayap"
+  },
+  {
+    "id": "back_mid",
+    "mesh_name": "Mesh_Middle_Back",
+    "muscle_group": "Punggung Tengah"
+  },
+  {
+    "id": "chest_mid",
+    "mesh_name": "Mesh_Middle_Chest",
+    "muscle_group": "Dada Tengah"
+  },
+  {
+    "id": "quads",
+    "mesh_name": "Mesh_Quads",
+    "muscle_group": "Paha Depan"
+  },
+  {
+    "id": "shoulders",
+    "mesh_name": "Mesh_Shoulder",
+    "muscle_group": "Bahu / Deltoid"
+  },
+  {
+    "id": "traps",
+    "mesh_name": "Mesh_Traps",
+    "muscle_group": "Traps / Pundak"
+  },
+  {
+    "id": "triceps",
+    "mesh_name": "Mesh_Tricep",
+    "muscle_group": "Tricep"
+  },
+  {
+    "id": "chest_up",
+    "mesh_name": "Mesh_Upper_Chest",
+    "muscle_group": "Dada Atas"
+  }
+]
