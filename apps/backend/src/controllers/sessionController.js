@@ -12,8 +12,8 @@ const addSessionLogSchema = z.object({
   log_data: z
     .string()
     .regex(
-      /^\d+x\d+x\d+$/,
-      "Invalid format. Use WeightxSetsxReps (e.g., 30x3x12)"
+      /^\d+([.,]\d+)?x\d+([.,]\d+)?x\d+([.,]\d+)?$/,
+      "Invalid format. Use WeightxSetsxReps (e.g., 30x3x12 or 32.5x3x12)"
     ),
 });
 
@@ -22,7 +22,7 @@ const addSessionLogSchema = z.object({
 //  * Volume = weight × sets × reps
  
 function calculateVolume(logData) {
-  const parts = logData.split("x").map(Number);
+  const parts = logData.replace(/,/g, ".").split("x").map(Number);
   if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
   const [weight, sets, reps] = parts;
   return weight * sets * reps;

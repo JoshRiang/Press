@@ -5,8 +5,8 @@ import { Plus } from "lucide-react";
 import { Exercise } from "@/src/services/exerciseService";
 import { useSessionStore } from "@/src/store/useSessionStore";
 
-// Strict regex: WeightxSetsxReps (all positive integers)
-const LOG_DATA_REGEX = /^\d+x\d+x\d+$/;
+// Strict regex: WeightxSetsxReps (supports decimals, e.g. 32.5x3x12)
+const LOG_DATA_REGEX = /^\d+([.,]\d+)?x\d+([.,]\d+)?x\d+([.,]\d+)?$/;
 
 interface SessionLogFormProps {
   sessionId: string;
@@ -36,7 +36,7 @@ export default function SessionLogForm({
 
     // Validation for log data format 
     if (!LOG_DATA_REGEX.test(logData)) {
-      setError("Format must be WeightxSetsxReps (e.g., 30x3x12)");
+      setError("Format must be WeightxSetsxReps (e.g., 30x3x12 or 32.5x3x12)");
       return;
     }
 

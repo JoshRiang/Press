@@ -19,7 +19,7 @@ import { useEngineStore } from "@/src/store/useEngineStore";
 import { computeExerciseProjections } from "@/src/lib/engineCalculations";
 import MannequinScene from "@/src/components/MannequinScene";
 
-const LOG_REGEX = /^\d+x\d+x\d+$/;
+const LOG_REGEX = /^\d+([.,]\d+)?x\d+([.,]\d+)?x\d+([.,]\d+)?$/;
 
 // Muscle group mapping 
 // Each pill maps to an array of muscle_group values from the database
@@ -123,7 +123,7 @@ function NewLogContent() {
     setError(null);
 
     if (!LOG_REGEX.test(logInput)) {
-      setError("Format: WeightxSetsxReps (e.g., 60x3x12)");
+      setError("Format: WeightxSetsxReps (e.g., 60x3x12 or 32.5x3x12)");
       return;
     }
 

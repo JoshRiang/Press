@@ -22,9 +22,9 @@ interface SessionState {
   setActiveSession: (id: string | null) => void;
 }
 
-//  Parse "30x3x12" → 30 * 3 * 12 = 1080
+//  Parse "30x3x12" or "32.5x3x12" → weight * sets * reps
 function parseVolume(logData: string): number {
-  const parts = logData.split("x").map(Number);
+  const parts = logData.replace(/,/g, ".").split("x").map(Number);
   if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
   return parts[0] * parts[1] * parts[2];
 }

@@ -3,7 +3,7 @@ import db from "../config/db.js";
 
 const createLogSchema = z.object({
   exercise_id: z.string().min(1, "Exercise ID is required"),
-  log_data: z.string().regex(/^\d+x\d+x\d+$/, "Invalid format. Use WeightxSetsxReps (e.g., 30x3x12)"),
+  log_data: z.string().regex(/^\d+([.,]\d+)?x\d+([.,]\d+)?x\d+([.,]\d+)?$/, "Invalid format. Use WeightxSetsxReps (e.g., 30x3x12 or 32.5x3x12)"),
 });
 
 export const createLog = async (req, res, next) => {

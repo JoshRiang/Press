@@ -39,7 +39,7 @@ export interface ProgressionInsight {
 // Helpers 
 
 function parseLogData(logData: string): { weight: number; sets: number; reps: number } | null {
-  const parts = logData.split("x").map(Number);
+  const parts = logData.replace(/,/g, ".").split("x").map(Number);
   if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
   return { weight: parts[0], sets: parts[1], reps: parts[2] };
 }

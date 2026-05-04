@@ -12,8 +12,8 @@ import { OverloadConfig, ExerciseProjection } from "@/src/store/useEngineStore";
 
 // Helpers Function
 export function parseLogData(logData: string): { weight: number; sets: number; reps: number } | null {
-  // Parse the format WeightxSetsxReps (30x3x12, etc) into an object
-  const parts = logData.split("x").map(Number);
+  // Parse the format WeightxSetsxReps (30x3x12, 32.5x3x12, 32,5x3x12) into an object
+  const parts = logData.replace(/,/g, ".").split("x").map(Number);
   if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
   return { weight: parts[0], sets: parts[1], reps: parts[2] };
 }

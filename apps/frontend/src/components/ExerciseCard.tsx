@@ -24,8 +24,8 @@ export default function ExerciseCard({ exercise, isAuthenticated }: ExerciseCard
     setError(null);
 
     // Regex validation for "WeightxSetsxReps"
-    if (!/^\d+x\d+x\d+$/.test(logValue)) {
-      setError('Use format WeightxSetsxReps (e.g., 30x3x12)');
+    if (!/^\d+([.,]\d+)?x\d+([.,]\d+)?x\d+([.,]\d+)?$/.test(logValue)) {
+      setError('Use format WeightxSetsxReps (e.g., 30x3x12 or 32.5x3x12)');
       return;
     }
 
