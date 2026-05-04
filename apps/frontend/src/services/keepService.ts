@@ -1,7 +1,7 @@
 import { WorkoutSession } from "./sessionService";
 
-const KEEP_API_URL = "http://127.0.0.1:8000/keep/new";
-// const KEEP_API_URL = "https://emas-3-calendar-fetcher.vercel.app/keep/new";
+// const KEEP_API_URL = "http://127.0.0.1:8000/keep/new";
+const KEEP_API_URL = "https://emas-3-calendar-fetcher.vercel.app/keep/new";
 
 interface KeepExerciseGroup {
   name: string;
