@@ -238,7 +238,7 @@ function NewLogContent() {
               onChange={(e) => setLogInput(e.target.value)}
               placeholder={activeProjection ? activeProjection.targetLogData : "60x3x12"}
               autoFocus
-              inputMode="numeric"
+              inputMode="text"
               className="w-full max-w-xs text-center rounded-xl border border-slate-800 bg-slate-950 px-4 py-5 font-mono text-4xl font-bold text-sky-400 placeholder-slate-700 outline-none transition-all focus:border-sky-400/50 focus:shadow-[0_0_20px_-4px_rgba(56,189,248,0.15)]"
             />
 
