@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSession, getUserSessions, addLogToSession, deleteSession } from '../controllers/sessionController.js';
+import { createSession, getUserSessions, addLogToSession, deleteSession, deleteLog } from '../controllers/sessionController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/', protect, createSession);
 router.get('/', protect, getUserSessions);
 router.post('/:id/logs', protect, addLogToSession);
+router.delete('/:sessionId/logs/:logId', protect, deleteLog);
 router.delete('/:id', protect, deleteSession);
 
 export default router;

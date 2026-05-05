@@ -66,3 +66,7 @@ export const addLogToSession = async (
 export const deleteSession = async (sessionId: string): Promise<void> => {
   await api.delete(`/sessions/${sessionId}`);
 };
+
+export const deleteLogFromSession = async (sessionId: string, logId: string): Promise<void> => {
+  await api.delete(`/sessions/${sessionId}/logs/${logId}`);
+};

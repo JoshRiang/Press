@@ -43,9 +43,10 @@ function formatFullDate(d: string) {
 
 function SessionDetail({ sessionId }: { sessionId: string }) {
   const router = useRouter();
-  const { sessions, loading, fetchSessions, removeSession } = useSessionStore();
+  const { sessions, loading, fetchSessions, removeSession, removeLog } = useSessionStore();
   const user = useProfileStore((state) => state.user);
   const [deleting, setDeleting] = useState(false);
+  const [deletingLogId, setDeletingLogId] = useState<string | null>(null);
   const [sendingKeep, setSendingKeep] = useState(false);
 
   useEffect(() => {
@@ -59,6 +60,13 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
     setDeleting(true);
     await removeSession(sessionId);
     router.push("/dashboard/session");
+  };
+
+  const handleDeleteLog = async (logId: string) => {
+    if (!sessionId) return;
+    setDeletingLogId(logId);
+    await removeLog(sessionId, logId);
+    setDeletingLogId(null);
   };
 
   const handleSendToKeep = async () => {
@@ -159,11 +167,21 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
                 {/* Card */}
                 <div className="flex-1 rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition-colors hover:border-slate-700">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-slate-200">{log.exercise_name}</p>
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={10} className="text-slate-600" />
-                      <span className="font-mono text-[10px] text-slate-600">{formatTime(log.created_at)}</span>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium text-slate-200">{log.exercise_name}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <Clock size={10} className="text-slate-600" />
+                        <span className="font-mono text-[10px] text-slate-600">{formatTime(log.created_at)}</span>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => handleDeleteLog(log.id)}
+                      disabled={deletingLogId === log.id}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                      title="Delete Log"
+                    >
+                      {deletingLogId === log.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                    </button>
                   </div>
 
                   {/* Log Data */}

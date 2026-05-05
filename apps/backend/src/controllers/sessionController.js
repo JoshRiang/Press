@@ -194,3 +194,36 @@ export const deleteSession = async (req, res, next) => {
     next(err);
   }
 };
+
+/**
+ * DELETE /sessions/:sessionId/logs/:logId
+ * Deletes a specific workout log entry.
+ */
+export const deleteLog = async (req, res, next) => {
+  try {
+    const { sessionId, logId } = req.params;
+
+    const log = await db("workout_logs").where("id", logId).first();
+    if (!log) {
+      const err = new Error("Log not found");
+      err.statusCode = 404;
+      throw err;
+    }
+
+    if (log.user_id !== req.user_id || log.session_id !== sessionId) {
+      const err = new Error("Not authorized to delete this log");
+      err.statusCode = 403;
+      throw err;
+    }
+
+    await db("workout_logs").where("id", logId).del();
+
+    res.status(200).json({
+      success: true,
+      message: "Log deleted",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+

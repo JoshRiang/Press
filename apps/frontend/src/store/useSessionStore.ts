@@ -18,6 +18,7 @@ interface SessionState {
   fetchSessions: () => Promise<void>;
   startSession: (title: string) => Promise<void>;
   addLog: (sessionId: string, exerciseId: string, logData: string, exerciseName: string) => Promise<void>;
+  removeLog: (sessionId: string, logId: string) => Promise<void>;
   removeSession: (sessionId: string) => Promise<void>;
   setActiveSession: (id: string | null) => void;
 }
@@ -80,6 +81,35 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       }));
     } catch {
       set({ error: "Failed to add log" });
+    }
+  },
+
+  removeLog: async (sessionId, logId) => {
+    set({ error: null });
+    try {
+      // Import the function directly here to avoid circular dependency issues if any
+      const { deleteLogFromSession } = await import("@/src/services/sessionService");
+      await deleteLogFromSession(sessionId, logId);
+      
+      set((state) => ({
+        sessions: state.sessions.map((s) => {
+          if (s.id !== sessionId) return s;
+          
+          const logToDelete = s.logs.find(l => l.id === logId);
+          if (!logToDelete) return s;
+          
+          const volumeToSubtract = parseVolume(logToDelete.log_data);
+          const updatedLogs = s.logs.filter(l => l.id !== logId);
+          
+          return { 
+            ...s, 
+            logs: updatedLogs, 
+            total_volume: Math.max(0, s.total_volume - volumeToSubtract) 
+          };
+        }),
+      }));
+    } catch {
+      set({ error: "Failed to delete log" });
     }
   },
 
