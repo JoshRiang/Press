@@ -8,12 +8,19 @@ export interface BodyMetrics {
   weightHistory: { date: string; weight: number }[];
 }
 
+export interface UserSettings {
+  weightIncrement: number;
+  repThreshold: number;
+  volumeOverload: number;
+}
+
 export interface ProfileResponse {
   id: string;
   email: string;
   full_name: string;
   created_at: string;
   metrics: BodyMetrics;
+  settings: UserSettings;
 }
 
 export const getProfile = async (): Promise<ProfileResponse> => {
@@ -21,7 +28,7 @@ export const getProfile = async (): Promise<ProfileResponse> => {
   return response.data;
 };
 
-export const updateProfile = async (metrics: Partial<BodyMetrics>): Promise<ProfileResponse> => {
-  const response = await api.put<ProfileResponse>('/profile', { metrics });
+export const updateProfile = async (data: { metrics?: Partial<BodyMetrics>, settings?: Partial<UserSettings> }): Promise<ProfileResponse> => {
+  const response = await api.put<ProfileResponse>('/profile', data);
   return response.data;
 };

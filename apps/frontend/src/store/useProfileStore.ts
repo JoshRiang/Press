@@ -1,15 +1,17 @@
 import { create } from "zustand";
 import { getStoredUser, User } from "@/src/services/authService";
-import { getProfile, updateProfile as updateProfileApi, BodyMetrics } from "@/src/services/profileService";
+import { getProfile, updateProfile as updateProfileApi, BodyMetrics, UserSettings } from "@/src/services/profileService";
 
 interface ProfileState {
   user: User | null;
   metrics: BodyMetrics;
+  settings: UserSettings;
   dbStatus: "connected" | "disconnected" | "checking";
 
   // Actions
   loadUser: () => Promise<void>;
   updateMetrics: (metrics: Partial<BodyMetrics>) => Promise<void>;
+  updateSettings: (settings: Partial<UserSettings>) => Promise<void>;
   addWeightEntry: (weight: number) => Promise<void>;
   setDbStatus: (status: "connected" | "disconnected" | "checking") => void;
 }
@@ -22,9 +24,16 @@ const DEFAULT_METRICS: BodyMetrics = {
   weightHistory: [],
 };
 
+const DEFAULT_SETTINGS: UserSettings = {
+  weightIncrement: 2.5,
+  repThreshold: 10,
+  volumeOverload: 5.0,
+};
+
 export const useProfileStore = create<ProfileState>((set, get) => ({
   user: null,
   metrics: DEFAULT_METRICS,
+  settings: DEFAULT_SETTINGS,
   dbStatus: "checking",
 
   loadUser: async () => {
@@ -51,6 +60,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
           created_at: profile.created_at
         },
         metrics: profile.metrics,
+        settings: profile.settings,
         dbStatus: "connected" 
       });
     } catch (error) {
@@ -66,12 +76,28 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     set({ metrics: updated });
 
     try {
-      const profile = await updateProfileApi(partial);
+      const profile = await updateProfileApi({ metrics: partial });
       set({ metrics: profile.metrics, dbStatus: "connected" });
     } catch (error) {
       console.error("Failed to update metrics", error);
       // Revert on failure
       set({ metrics: current, dbStatus: "disconnected" });
+    }
+  },
+
+  updateSettings: async (partial) => {
+    const current = get().settings;
+    const updated = { ...current, ...partial };
+    // Optimistic update
+    set({ settings: updated });
+
+    try {
+      const profile = await updateProfileApi({ settings: partial });
+      set({ settings: profile.settings, dbStatus: "connected" });
+    } catch (error) {
+      console.error("Failed to update settings", error);
+      // Revert on failure
+      set({ settings: current, dbStatus: "disconnected" });
     }
   },
 
@@ -93,8 +119,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
     try {
       const profile = await updateProfileApi({
-        currentWeight: weight,
-        weightHistory: newHistory
+        metrics: {
+          currentWeight: weight,
+          weightHistory: newHistory
+        }
       });
       set({ metrics: profile.metrics, dbStatus: "connected" });
     } catch (error) {
