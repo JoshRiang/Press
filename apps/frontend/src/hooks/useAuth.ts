@@ -19,11 +19,12 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  const forceLogout = useCallback(() => {
+  const forceLogout = useCallback((reason?: "expired" | "unauthorized") => {
     logout();
     setIsAuthenticated(false);
     setUser(null);
-    router.replace("/auth/login");
+    const query = reason ? `?reason=${reason}` : "";
+    router.replace(`/auth/login${query}`);
   }, [router]);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function useAuth() {
         setIsAuthenticated(true);
       } catch {
         // Refresh failed → cookie is invalid / tampered
-        forceLogout();
+        forceLogout("expired");
       } finally {
         setIsLoading(false);
       }

@@ -69,7 +69,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('press_user');
         if (typeof window !== 'undefined') {
-          window.location.href = '/auth/login';
+          window.location.href = '/auth/login?reason=expired';
         }
         return Promise.reject(refreshError);
       } finally {
