@@ -40,9 +40,15 @@ export default function SessionLogForm({
       return;
     }
 
+    const selectedExercise = exercises.find((ex) => ex.exercise_id === exerciseId);
+    if (!selectedExercise) {
+      setError("Invalid exercise selected");
+      return;
+    }
+
     setLoading(true);
     try {
-      await addLog(sessionId, exerciseId, logData);
+      await addLog(sessionId, exerciseId, logData, selectedExercise.name);
       // Clear input fields after successful submission
       setLogData("");
     } catch {
