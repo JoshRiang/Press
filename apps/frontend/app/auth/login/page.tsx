@@ -8,7 +8,9 @@ import {
   Mail, 
   ArrowRight, 
   ArrowLeft,
-  Loader2
+  Loader2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { login } from '@/src/services/authService';
 
@@ -16,6 +18,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,13 +26,35 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (password.length < 12) {
+      setError('Password must be at least 12 characters');
+      return;
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      setError('Password must contain at least one special character');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number');
+      return;
+    }
+
     setLoading(true);
     try {
       // Is this user valid? If so, we should get a token back and store it in localStorage
       await login(email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      const data = err?.response?.data;
+      let data = err?.response?.data;
+      
+      // Handle stringified JSON arrays
+      if (typeof data === 'string' && data.trim().startsWith('[')) {
+        try { data = JSON.parse(data); } catch {}
+      } else if (data?.message && typeof data.message === 'string' && data.message.trim().startsWith('[')) {
+        try { data.message = JSON.parse(data.message); } catch {}
+      }
+
       if (Array.isArray(data)) {
         setError(data.map((e: any) => e.message || e).join(', '));
       } else if (data?.message) {
@@ -118,15 +143,22 @@ export default function LoginPage() {
                   <Lock size={16} />
                 </div>
                 <input 
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••••••"
                   onFocus={() => setIsFocused('password')}
                   onBlur={() => setIsFocused('')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-slate-950/50 border border-slate-900 rounded-2xl py-4 pl-12 pr-4 text-sm font-mono text-white outline-none focus:border-sky-500/30 transition-all placeholder:text-slate-800"
+                  className="w-full bg-slate-950/50 border border-slate-900 rounded-2xl py-4 pl-12 pr-12 text-sm font-mono text-white outline-none focus:border-sky-500/30 transition-all placeholder:text-slate-800"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={`absolute inset-y-0 right-0 pr-4 flex items-center transition-colors hover:text-sky-400 ${isFocused === 'password' ? 'text-sky-400' : 'text-slate-600'}`}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
 
