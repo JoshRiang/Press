@@ -129,7 +129,7 @@ function NewLogContent() {
 
     setSubmitting(true);
     try {
-      await addLog(sessionId, selectedExercise.exercise_id, logInput);
+      await addLog(sessionId, selectedExercise.exercise_id, logInput, selectedExercise.name);
       triggerSuccess(selectedExercise);
       setSelectedExercise(null);
       setLogInput("");

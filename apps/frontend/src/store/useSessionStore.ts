@@ -17,7 +17,7 @@ interface SessionState {
   // Actions
   fetchSessions: () => Promise<void>;
   startSession: (title: string) => Promise<void>;
-  addLog: (sessionId: string, exerciseId: string, logData: string) => Promise<void>;
+  addLog: (sessionId: string, exerciseId: string, logData: string, exerciseName: string) => Promise<void>;
   removeSession: (sessionId: string) => Promise<void>;
   setActiveSession: (id: string | null) => void;
 }
@@ -64,10 +64,12 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     }
   },
 
-  addLog: async (sessionId, exerciseId, logData) => {
+  addLog: async (sessionId, exerciseId, logData, exerciseName) => {
     set({ error: null });
     try {
       const log: SessionLog = await apiAddLog(sessionId, exerciseId, logData);
+      log.exercise_name = exerciseName; // Populate the name locally since the backend doesn't return it
+      
       set((state) => ({
         sessions: state.sessions.map((s) => {
           if (s.id !== sessionId) return s;
