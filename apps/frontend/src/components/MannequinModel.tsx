@@ -81,3 +81,5 @@ export default function MannequinModel() {
     </group>
   );
 }
+
+useGLTF.preload("/models/human_body.glb");
