@@ -28,12 +28,17 @@ export default function LoginPage() {
       // Is this user valid? If so, we should get a token back and store it in localStorage
       await login(email, password);
       router.push('/dashboard');
-    } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err && (err as { response?: { data?: { message?: string } } }).response?.data?.message) {
-        setError((err as { response: { data: { message: string } } }).response.data.message);
-        // Client error with message from server, example invalid credentials
+    } catch (err: any) {
+      const data = err?.response?.data;
+      if (Array.isArray(data)) {
+        setError(data.map((e: any) => e.message || e).join(', '));
+      } else if (data?.message) {
+        if (Array.isArray(data.message)) {
+          setError(data.message.map((e: any) => e.message || e).join(', '));
+        } else {
+          setError(data.message);
+        }
       } else {
-        // Server error or unexpected error
         setError('Login failed. Please try again.');
       }
     } finally {

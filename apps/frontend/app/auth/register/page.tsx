@@ -29,12 +29,17 @@ export default function RegisterPage() {
       // Register handler
       await register(email, password, fullName);
       router.push('/auth/login');
-    } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err && (err as { response?: { data?: { message?: string } } }).response?.data?.message) {
-        setError((err as { response: { data: { message: string } } }).response.data.message);
-        // Client error with message from server, example email already in use
+    } catch (err: any) {
+      const data = err?.response?.data;
+      if (Array.isArray(data)) {
+        setError(data.map((e: any) => e.message || e).join(', '));
+      } else if (data?.message) {
+        if (Array.isArray(data.message)) {
+          setError(data.message.map((e: any) => e.message || e).join(', '));
+        } else {
+          setError(data.message);
+        }
       } else {
-        // Server error or unexpected error
         setError('Registration failed. Please try again.');
       }
     } finally {
