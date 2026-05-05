@@ -18,6 +18,7 @@ import {
 import { logout } from "@/src/services/authService";
 import { useSessionStore } from "@/src/store/useSessionStore";
 import { useProfileStore } from "@/src/store/useProfileStore";
+import { useAuth } from "@/src/hooks/useAuth";
 import api from "@/src/services/authService";
 
 // Navigation Items For Navbar
@@ -93,44 +94,36 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { startSession } = useSessionStore();
-  const { dbStatus, setDbStatus, user, loadUser } = useProfileStore();
+  const { dbStatus, setDbStatus, loadUser } = useProfileStore();
+  const { isAuthenticated, isLoading, user, forceLogout } = useAuth();
 
   const [showNew, setShowNew] = useState(false);
   const [title, setTitle] = useState("");
   const [creating, setCreating] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
-  // Check Auth & DB connection on mount
+  // Load profile & DB status after auth is verified
   useEffect(() => {
-    // Check token before rendering dashboard, so user cant see the dashboard page even for a split second 
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.replace("/auth/login");
-      return;
-    }
+    if (!isAuthenticated) return;
 
     loadUser();
-    setIsAuthChecking(false);
-
     setDbStatus("checking");
-    
-    //   .get("/exercises")
-    //   .then(() => setDbStatus("connected"))
-    //   .catch(() => setDbStatus("disconnected"));
-
     // TODO: Find a new way to get the status of the database connection
     setDbStatus("connected");
-  }, [setDbStatus, router, loadUser]);
+  }, [isAuthenticated, setDbStatus, loadUser]);
 
-  // Do not render anything until auth is verified
-  if (isAuthChecking) {
+  // Do not render anything until auth is verified against the server
+  if (isLoading || !isAuthenticated) {
     return null;
   }
 
-  const handleLogout = () => {
-    logout();
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Ignore errors — we're logging out anyway
+    }
+    forceLogout();
   };
 
   const handleCreate = async (e: React.FormEvent) => {

@@ -13,6 +13,74 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Track whether a refresh is already in-flight to avoid duplicate calls
+let isRefreshing = false;
+let failedQueue: { resolve: (token: string) => void; reject: (err: unknown) => void }[] = [];
+
+function processQueue(error: unknown, token: string | null = null) {
+  failedQueue.forEach((p) => {
+    if (token) p.resolve(token);
+    else p.reject(error);
+  });
+  failedQueue = [];
+}
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Only intercept 401s, and skip the refresh endpoint itself to avoid loops
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/login')
+    ) {
+      if (isRefreshing) {
+        // Another refresh is in-flight; queue this request
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(api(originalRequest));
+            },
+            reject: (err: unknown) => reject(err),
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const res = await api.get('/auth/refresh');
+        const newToken = res.data?.data?.accessToken;
+
+        if (newToken) {
+          localStorage.setItem('accessToken', newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          processQueue(null, newToken);
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // Refresh failed → session is invalid, force logout
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('press_user');
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth/login';
+        }
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export interface User {
   id: string;
   email: string;
