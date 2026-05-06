@@ -3,14 +3,26 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "BACKEND_API_URL",
+        "NODE_ENV",
+        "NODE_VERSION",
+        "NEXT_PUBLIC_API_URL"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "dev": {
-      "cache": false,      
-      "persistent": true    
+      "cache": false,
+      "persistent": true
     }
-  }
+  },
+  "globalPassThroughEnv": [
+    "BACKEND_API_URL",
+    "NODE_ENV",
+    "NODE_VERSION",
+    "NEXT_PUBLIC_API_URL"
+  ]
 }

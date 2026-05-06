@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 interface SparklineProps {
   data: number[];
   width?: number;
@@ -13,21 +15,13 @@ interface SparklineProps {
  * Minimal SVG sparkline chart for volume trends.
  * Renders a smooth polyline with optional gradient fill.
  */
-export default function Sparkline({
-  data,
-  width = 120,
-  height = 32,
-  color = "#38bdf8",
-  fillColor,
-  strokeWidth = 1.5,
-}: SparklineProps) {
+export default function Sparkline({ data, width = 120, height = 32, color = "#38bdf8", fillColor, strokeWidth = 1.5 }: SparklineProps) {
+  const gradientId = useId();
+
   if (data.length < 2) {
     return (
-      <div
-        style={{ width, height }}
-        className="flex items-center justify-center"
-      >
-        <span className="font-mono text-[8px] text-slate-700">No data</span>
+      <div style={{ width, height }} className="flex items-start justify-start">
+        <span className="font-mono text-[9px] text-slate-300">Add 1 more session to see trend</span>
       </div>
     );
   }
@@ -48,42 +42,24 @@ export default function Sparkline({
 
   const polyline = points.join(" ");
   const fillPath = `M ${points[0]} ${points.join(" L ")} L ${padding + chartWidth},${padding + chartHeight} L ${padding},${padding + chartHeight} Z`;
-  const gradientId = `sparkline-gradient-${Math.random().toString(36).slice(2, 8)}`;
+  const gradientUrlId = `sparkline-gradient-${gradientId}`;
 
   return (
     <svg width={width} height={height} className="overflow-visible">
       {fillColor && (
         <>
           <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientUrlId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={fillColor} stopOpacity={0.3} />
               <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <path d={fillPath} fill={`url(#${gradientId})`} />
+          <path d={fillPath} fill={`url(#${gradientUrlId})`} />
         </>
       )}
-      <polyline
-        points={polyline}
-        fill="none"
-        stroke={color}
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <polyline points={polyline} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
       {/* Endpoint dot */}
-      {data.length > 0 && (
-        <circle
-          cx={padding + chartWidth}
-          cy={
-            padding +
-            chartHeight -
-            ((data[data.length - 1] - min) / range) * chartHeight
-          }
-          r={2.5}
-          fill={color}
-        />
-      )}
+      {data.length > 0 && <circle cx={padding + chartWidth} cy={padding + chartHeight - ((data[data.length - 1] - min) / range) * chartHeight} r={2.5} fill={color} />}
     </svg>
   );
 }

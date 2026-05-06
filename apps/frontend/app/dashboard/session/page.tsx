@@ -8,35 +8,10 @@ import { ArrowLeft, Plus, Flame, Clock, Loader2, Trash2, NotebookText, ChevronRi
 import { useSessionStore } from "@/src/store/useSessionStore";
 import { useProfileStore } from "@/src/store/useProfileStore";
 import { sendSessionToKeep } from "../../../src/services/keepService";
-
-// Helpers
+import LocalTime from "@/src/components/LocalTime";
 
 function formatVolume(v: number) {
   return v.toLocaleString("en-US");
-}
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function formatTime(d: string) {
-  return new Date(d).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatFullDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 }
 
 // Session Detail View
@@ -110,7 +85,9 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
           </Link>
           <div>
             <h1 className="text-lg font-bold text-slate-100">{session.title}</h1>
-            <p className="mt-0.5 font-mono text-[10px] text-slate-600">{formatFullDate(session.created_at)}</p>
+            <p className="mt-0.5 font-mono text-[10px] text-slate-600">
+              <LocalTime value={session.created_at} options={{ weekday: "long", year: "numeric", month: "long", day: "numeric" }} />
+            </p>
           </div>
         </div>
 
@@ -171,15 +148,12 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
                       <p className="text-sm font-medium text-slate-200">{log.exercise_name}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <Clock size={10} className="text-slate-600" />
-                        <span className="font-mono text-[10px] text-slate-600">{formatTime(log.created_at)}</span>
+                        <span className="font-mono text-[10px] text-slate-600">
+                          <LocalTime value={log.created_at} options={{ hour: "2-digit", minute: "2-digit" }} />
+                        </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleDeleteLog(log.id)}
-                      disabled={deletingLogId === log.id}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
-                      title="Delete Log"
-                    >
+                    <button onClick={() => handleDeleteLog(log.id)} disabled={deletingLogId === log.id} className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50" title="Delete Log">
                       {deletingLogId === log.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                     </button>
                   </div>
@@ -235,9 +209,9 @@ function SessionsList() {
 
       // Check date match
       const d = new Date(s.created_at);
-      const day = d.getDate();
-      const monthIdx = d.getMonth();
-      const year = d.getFullYear();
+      const day = d.getUTCDate();
+      const monthIdx = d.getUTCMonth();
+      const year = d.getUTCFullYear();
 
       const en = MONTHS_EN[monthIdx];
       const enShort = MONTHS_EN_SHORT[monthIdx];
@@ -254,10 +228,11 @@ function SessionsList() {
   const groupedSessions = useMemo(() => {
     const groups = new Map<string, typeof sessions>();
     for (const session of filteredSessions) {
-      const key = new Date(session.created_at).toLocaleDateString("en-US", {
+      const key = new Intl.DateTimeFormat("en-US", {
+        timeZone: "UTC",
         year: "numeric",
         month: "long",
-      });
+      }).format(new Date(session.created_at));
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(session);
     }
@@ -302,7 +277,9 @@ function SessionsList() {
         <div key={monthLabel}>
           <div className="mb-2 flex items-center gap-2">
             <Calendar size={11} className="text-slate-700" />
-            <span className="font-mono text-[9px] font-medium tracking-wider text-slate-700 uppercase">{monthLabel}</span>
+            <span className="font-mono text-[9px] font-medium tracking-wider text-slate-700 uppercase">
+              <LocalTime value={monthSessions[0].created_at} options={{ year: "numeric", month: "long" }} />
+            </span>
             <div className="flex-1 h-px bg-slate-800/50" />
             <span className="font-mono text-[9px] text-slate-700">{monthSessions.length} sessions</span>
           </div>
@@ -327,7 +304,9 @@ function SessionsList() {
                         <div className="mt-0.5 flex items-center gap-2">
                           <Clock size={10} className="text-slate-700" />
                           <span className="font-mono text-[10px] text-slate-600">
-                            {formatDate(session.created_at)} · {formatTime(session.created_at)}
+                            <LocalTime value={session.created_at} options={{ weekday: "short", month: "short", day: "numeric" }} />
+                            {" · "}
+                            <LocalTime value={session.created_at} options={{ hour: "2-digit", minute: "2-digit" }} />
                           </span>
                         </div>
                       </div>
