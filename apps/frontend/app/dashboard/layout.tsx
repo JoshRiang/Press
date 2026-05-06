@@ -194,6 +194,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img src="/icon_no_bg.png" alt="PRESS Logo" className="h-4 w-auto object-contain" />
             </Link>
 
+            {/* Mobile Button Help */}
+            <button
+              onClick={() => {
+                setShowProfileDropdown(false);
+                router.push("/dashboard/getstarted?state=3");
+              }}
+              className="flex w-min ms-auto items-center gap-1 px-6 py-3 text-left text-sm text-blue-400 transition-colors hover:bg-blue-500/10"
+            >
+              <HelpCircle size={14} />
+              Help
+            </button>
+
             <div className="flex items-center gap-2 relative">
               <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 transition-colors hover:bg-sky-400/20">
                 <span className="font-mono text-sm font-bold text-sky-400">{user?.full_name?.charAt(0)?.toUpperCase() || "U"}</span>
@@ -210,16 +222,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       </Link>
                       <div className="h-px bg-slate-800" />
 
-                      <button
-                        onClick={() => {
-                          setShowProfileDropdown(false);
-                          router.push("/dashboard/getstarted?state=3");
-                        }}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-blye-400 transition-colors hover:bg-blue-500/10"
-                      >
-                        <HelpCircle size={14} />
-                        Help
-                      </button>
                       <button
                         onClick={() => {
                           setShowProfileDropdown(false);
